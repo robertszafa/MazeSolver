@@ -10,11 +10,11 @@ import java.util.*;
 
 
 public class MazeToGraph {
-    protected boolean[][] maze;
-    protected int height, width;
-    protected int[] startCo, endCo;
-    protected GraphNode startNode, endNode;
-    protected Set<GraphNode> graphNodes = new HashSet<>();
+    private boolean[][] maze;
+    private int height, width;
+    private int[] startCo, endCo;
+    private GraphNode startNode, endNode;
+    private Set<GraphNode> graphNodes = new HashSet<>();
 
     public MazeToGraph (boolean[][] maze, int height, int width) {
         this.maze = maze;
@@ -28,6 +28,7 @@ public class MazeToGraph {
 
         getGraphMaze();
         connectStartEnd();
+
     }
 
     
@@ -44,17 +45,17 @@ public class MazeToGraph {
             graphNodes.add(lastNode);
             directions = getDirection(currCo, lastDirection);
 
+            // all possible nodes were added
+            if (directions.size() == 0 && lastJunctions.size() == 0) {
+                break;
+            }
             // cannot continue on this path. Fallback to last available junction
-            if (directions.size() == 0) {
-                if (lastJunctions.size() == 0) {
-                    break;
-                }
-
+            else if (directions.size() == 0) {
                 // retrieve node from lastJunctions stack
                 lastNode = (GraphNode) lastJunctions.peek().keySet().toArray()[0];
+                char lastLastDirection = lastDirection;
                 lastDirection = lastJunctions.peek().get(lastNode).pop();
                 lastNode = findNextNode(lastNode.coordinates, lastDirection, lastNode);
-
 
                 // if the node from lastJunctions doesn't have anymore directions, pop it from the stack
                 if (lastJunctions.peek().get(lastJunctions.peek().keySet().toArray()[0]).size() < 1) {
@@ -79,9 +80,70 @@ public class MazeToGraph {
             }
 
             currCo = lastNode.coordinates;
+
+            if (Arrays.equals(lastNode.coordinates, endCo)) {
+                endNode = lastNode;
+                graphNodes.add(endNode);
+            }
+        }
+    }
+
+    // returns the next node after lastNode in the specified direction
+    private GraphNode findNextNode (int[] currCo, char direction, GraphNode lastNode) {
+        int currHeight = currCo[0];
+        int currWidth = currCo[1];
+        GraphNode newNode;
+
+        while (!(currHeight == endCo[0] && currWidth == endCo[1])) {
+            switch (direction) {
+                case 'n':
+                    if (!maze[currHeight - 1][currWidth] ||
+                            (maze[currHeight][currWidth + 1] && currHeight != currCo[0]) ||
+                            (maze[currHeight][currWidth - 1] && currHeight != currCo[0])) {
+                        newNode = new GraphNode(null, lastNode, null, null,
+                                isJunction(currHeight, currWidth), currHeight, currWidth);
+                        lastNode.n = newNode;
+                        return newNode;
+                    }
+                    currHeight--;
+                    break;
+                case 's':
+                    if (!maze[currHeight + 1][currWidth] ||
+                            (maze[currHeight][currWidth + 1] && currHeight != currCo[0]) ||
+                            (maze[currHeight][currWidth - 1] && currHeight != currCo[0])) {
+                        newNode = new GraphNode(lastNode, null, null, null,
+                                isJunction(currHeight, currWidth), currHeight, currWidth);
+                        lastNode.s = newNode;
+                        return newNode;
+                    }
+                    currHeight++;
+                    break;
+                case 'e':
+                    if (!maze[currHeight][currWidth + 1] ||
+                            (maze[currHeight + 1][currWidth] && currWidth != currCo[1]) ||
+                            (maze[currHeight - 1][currWidth] && currWidth != currCo[1])) {
+                        newNode = new GraphNode(null, null, lastNode, null,
+                                isJunction(currHeight, currWidth), currHeight, currWidth);
+                        lastNode.e = newNode;
+                        return newNode;
+                    }
+                    currWidth++;
+                    break;
+                case 'w':
+                    if (!maze[currHeight][currWidth - 1] ||
+                            (maze[currHeight + 1][currWidth] && currWidth != currCo[1]) ||
+                            (maze[currHeight - 1][currWidth] && currWidth != currCo[1])) {
+                        newNode = new GraphNode(null, null, null, lastNode,
+                                isJunction(currHeight, currWidth), currHeight, currWidth);
+                        lastNode.w = newNode;
+                        return newNode;
+                    }
+                    currWidth--;
+                    break;
+            }
         }
 
-        graphNodes.add(endNode);
+        return endNode;
     }
 
     // returns a stack with the available directions to go from the current location
@@ -130,57 +192,13 @@ public class MazeToGraph {
         return false;
     }
 
-    // returns the next node after lastNode in the specified direction
-    private GraphNode findNextNode (int[] currCo, char direction, GraphNode lastNode) {
-        int currHeight = currCo[0];
-        int currWidth = currCo[1];
-
-        while (!(currHeight == endCo[0] && currWidth == endCo[1])) {
-            switch (direction) {
-                case 'n':
-                    if (!maze[currHeight - 1][currWidth] ||
-                            (maze[currHeight][currWidth + 1] && currHeight != currCo[0]) ||
-                            (maze[currHeight][currWidth - 1] && currHeight != currCo[0])) {
-                        return new GraphNode(null, lastNode, null, null,
-                                isJunction(currHeight, currWidth), currHeight, currWidth);
-                    }
-                    currHeight--;
-                    break;
-                case 's':
-                    if (!maze[currHeight + 1][currWidth] ||
-                            (maze[currHeight][currWidth + 1] && currHeight != currCo[0]) ||
-                            (maze[currHeight][currWidth - 1] && currHeight != currCo[0])) {
-
-                        return new GraphNode(lastNode, null, null, null,
-                                isJunction(currHeight, currWidth), currHeight, currWidth);
-                    }
-                    currHeight++;
-                    break;
-                case 'e':
-                    if (!maze[currHeight][currWidth + 1] ||
-                            (maze[currHeight + 1][currWidth] && currWidth != currCo[1]) ||
-                            (maze[currHeight - 1][currWidth] && currWidth != currCo[1])) {
-                        return new GraphNode(null, null, lastNode, null,
-                                isJunction(currHeight, currWidth), currHeight, currWidth);
-                    }
-                    currWidth++;
-                    break;
-                case 'w':
-                    if (!maze[currHeight][currWidth - 1] ||
-                            (maze[currHeight + 1][currWidth] && currWidth != currCo[1]) ||
-                            (maze[currHeight - 1][currWidth] && currWidth != currCo[1])) {
-                        return new GraphNode(null, null, null, lastNode,
-                                isJunction(currHeight, currWidth), currHeight, currWidth);
-                    }
-                    currWidth--;
-                    break;
-            }
-        }
-
-
-        return endNode;
-    }
-
+    // reverses the cost of the nodes to be decreasing when approaching the endNode
+//    private void reverseNodeCost() {
+//        int endCost = endNode.cost;
+//        for (GraphNode n : graphNodes) {
+//            n.cost = endCost - n.cost;
+//        }
+//    }
 
     // add north, south, west, east GraphNodes to endNode and startNode
     private void connectStartEnd() {
@@ -271,19 +289,19 @@ public class MazeToGraph {
 
     // returns height, width coordinates of START
     private int[] getStartCoordinates() {
-        for (int w=1; w<width-1; w++) {
+        for (int w=1; w<width-2; w++) {
             if (maze[1][w]) {
                 return new int[] {1, w};
             }
         }
 
-        for (int w=1; w<width-1; w++) {
+        for (int w=1; w<width-2; w++) {
             if (maze[height-2][w]) {
                 return new int[] {height-2, w};
             }
         }
 
-        for (int h=1; h<height-1; h++) {
+        for (int h=1; h<height-2; h++) {
             if (maze[h][1]) {
                 return new int[] {h, 1};
             }
@@ -294,30 +312,43 @@ public class MazeToGraph {
 
     // returns height, width coordinates of END
     private int[] getEndCoordinates() {
-        for (int w=1; w<width-1; w++) {
+        for (int w=1; w<width-2; w++) {
             if (maze[1][w] && !(Arrays.equals(new int[] {1, w}, startCo))) {
                 return new int[] {1, w};
             }
         }
 
-        for (int w=1; w<width-1; w++) {
+        for (int w=1; w<width-2; w++) {
             if (maze[height-2][w] && !(Arrays.equals(new int[] {height-2, w}, startCo))) {
                 return new int[] {height-2, w};
             }
         }
 
-        for (int h=1; h<height-1; h++) {
+        for (int h=1; h<height-2; h++) {
             if (maze[h][1] && !(Arrays.equals(new int[] {h, 1}, startCo))) {
                 return new int[] {h, 1};
             }
         }
 
-        for (int h=1; h<height-1; h++) {
-            if (maze[h][width-1] && !(Arrays.equals(new int[] {h, width-1}, startCo))) {
-                return new int[] {h, width-1};
+        for (int h=1; h<height-2; h++) {
+            if (maze[h][width-2] && !(Arrays.equals(new int[] {h, width-2}, startCo))) {
+                return new int[] {h, width-2};
             }
         }
 
         return null;
+    }
+
+
+    public GraphNode getStartNode() {
+        return startNode;
+    }
+
+    public GraphNode getEndNode() {
+        return endNode;
+    }
+
+    public Set<GraphNode> getGraphNodes() {
+        return graphNodes;
     }
 }
