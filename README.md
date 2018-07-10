@@ -9,8 +9,7 @@ This project is in early stages. I have only implemented the A* algorithm for no
 ## How to run
 ### Compile
 - download the project
-- open a terminal window
-- compile the src folder by navigating to the MazeSolver directory and typing: <b>javac src/*.java</b>
+- compile the src folder
 ### Run
 - from the src directory type <b>java MazeSolver ../mazes/<i>"maze-file-name"</i></b>
 
