@@ -10,6 +10,7 @@ public class AStar {
     private Set<GraphNode> closedSet = new HashSet<>();
     // for each node, which node it can most efficiently be reached from.
     private LinkedHashMap<GraphNode, GraphNode> cameFrom = new LinkedHashMap<>();
+    protected int nodesVisitedCount = 0;
 
     public AStar (GraphNode start, GraphNode end, Set<GraphNode> nodes) {
         this.start = start;
@@ -28,6 +29,7 @@ public class AStar {
 
         while (!openSet.isEmpty()) {
             GraphNode curr = lowestFScore(openSet);
+            nodesVisitedCount++;
 
             if (curr == end) {
                 // we reached our goal

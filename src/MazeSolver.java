@@ -21,50 +21,71 @@ public class MazeSolver {
     private static int height, width;
     private static boolean[][] mazeBoolean;
     private static Set<GraphNode> nodes;
+    private static int nodeCount;
     private static GraphNode startNode, endNode;
     private static AStar aStar;
     private static LinkedList<GraphNode> aStarPath;
+    private static String fileType;
+    private static long startTime;
 
 
     public static void main(String[] args) {
+        startTime = System.nanoTime();
+
         // READ FILE
-        fileName = args[0];
+        System.out.println("\nLoading image..");
         img = null;
         try {
+            fileName = args[0];
             img = ImageIO.read(new File(fileName));
         }
         catch (IOException e) {
-            System.out.println( e);
+            System.out.println("Could not read file");
             System.exit(1);
         }
 
+        System.out.println("Converting image to graph..");
+        // Process image, convert maze to boolean, convert to nodes
         processImg = new ProcessImage(img);
         height = processImg.getHeight();
         width = processImg.getWidth();
         mazeBoolean = processImg.getMazeBoolean();
-
         mazeGraph = new MazeToGraph(mazeBoolean, height, width);
         nodes = mazeGraph.getGraphNodes();
+        nodeCount = nodes.size();
         startNode = mazeGraph.getStartNode();
         endNode = mazeGraph.getEndNode();
-
+        System.out.println("Total node count: " + nodeCount);
+        System.out.println("Time elapsed: " + 1.0 * (System.nanoTime() - startTime) / 1000000000 + " s") ;
 
         // A* algorithm
-        System.out.println("Solving with A* ...");
+        System.out.println("\nSolving with A*..");
         aStar = new AStar(startNode, endNode, nodes);
         aStarPath = aStar.getPath();
+        System.out.println("Path found");
+        System.out.println("Nodes visited: " + aStar.nodesVisitedCount);
+        System.out.println("Nodes in solution path: " + aStarPath.size());
+        System.out.println("Time elapsed: " + 1.0 * (System.nanoTime() - startTime) / 1000000000 + " s");
 
+
+        System.out.println("Saving solution image to current directory..");
+        // Save image with solution
         BufferedImage imgSolved = drawPath(aStarPath, img);
-        //write image
         try{
+            String extension = "";
+
+            int i = fileName.lastIndexOf('.');
+            int p = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+
+            if (i > p) {
+                extension = fileName.substring(i+1);
+            }
+
             File f = new File("../mazes/SOLUTION-" + new File(fileName).getName());
-            ImageIO.write(imgSolved, "gif", f);
-        }catch(IOException e){
-            System.out.println(e);
+            ImageIO.write(imgSolved, extension, f);
+        } catch(IOException e){
+            System.out.println("Could not save solution image");
         }
-
-
-        System.out.println("\nFinished!\nAn image with the solution has created in the current directory.");
     }
 
     // draws a green line that represents the solution path
