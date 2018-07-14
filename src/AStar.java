@@ -33,7 +33,7 @@ public class AStar {
 
             if (curr == end) {
                 // we reached our goal
-                return reconstructPath(cameFrom, end);
+                return GraphNode.reconstructPath(cameFrom, end, start);
             }
 
             openSet.remove(curr);
@@ -63,21 +63,9 @@ public class AStar {
             }
         }
 
-        return reconstructPath(cameFrom, end);
+        return GraphNode.reconstructPath(cameFrom, end, start);
     }
 
-    private LinkedList<GraphNode> reconstructPath(LinkedHashMap<GraphNode, GraphNode> cameFrom, GraphNode end) {
-        LinkedList<GraphNode> path = new LinkedList<>();
-
-        GraphNode curr = end;
-        path.add(curr);
-        while (curr != start) {
-            curr = cameFrom.get(curr);
-            path.add(curr);
-        }
-
-        return path;
-    }
 
     private GraphNode lowestFScore(Set<GraphNode> nodes) {
         if (nodes.size() == 0) {

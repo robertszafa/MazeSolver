@@ -25,7 +25,8 @@ public class MazeSolver {
     private static GraphNode startNode, endNode;
     private static AStar aStar;
     private static LinkedList<GraphNode> aStarPath;
-    private static String fileType;
+    private static BFS bfs;
+    private static LinkedList<GraphNode> bfsPath;
     private static long startTime;
 
 
@@ -58,7 +59,12 @@ public class MazeSolver {
         System.out.println("Total node count: " + nodeCount);
         System.out.println("Time elapsed: " + 1.0 * (System.nanoTime() - startTime) / 1000000000 + " s") ;
 
-        // A* algorithm
+        processAStar();
+        processBFS();
+    }
+
+
+    private static void processAStar () {
         System.out.println("\nSolving with A*..");
         aStar = new AStar(startNode, endNode, nodes);
         aStarPath = aStar.getPath();
@@ -68,7 +74,7 @@ public class MazeSolver {
         System.out.println("Time elapsed: " + 1.0 * (System.nanoTime() - startTime) / 1000000000 + " s");
 
 
-        System.out.println("Saving solution image to current directory..");
+        System.out.println("Saving A* solution image to current directory..");
         // Save image with solution
         BufferedImage imgSolved = drawPath(aStarPath, img);
         try{
@@ -81,7 +87,37 @@ public class MazeSolver {
                 extension = fileName.substring(i+1);
             }
 
-            File f = new File("../mazes/SOLUTION-" + new File(fileName).getName());
+            File f = new File("../mazes/SOLUTION-ASTAR-" + new File(fileName).getName());
+            ImageIO.write(imgSolved, extension, f);
+        } catch(IOException e){
+            System.out.println("Could not save solution image");
+        }
+    }
+
+    private static void processBFS () {
+        System.out.println("\nSolving with BFS..");
+        bfs = new BFS(startNode, endNode, nodes);
+        bfsPath = bfs.getPath();
+        System.out.println("Path found");
+        System.out.println("Nodes visited: " + bfs.nodesVisitedCount);
+        System.out.println("Nodes in solution path: " + bfsPath.size());
+        System.out.println("Time elapsed: " + 1.0 * (System.nanoTime() - startTime) / 1000000000 + " s");
+
+
+        System.out.println("Saving BFS solution image to current directory..");
+        // Save image with solution
+        BufferedImage imgSolved = drawPath(aStarPath, img);
+        try{
+            String extension = "";
+
+            int i = fileName.lastIndexOf('.');
+            int p = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+
+            if (i > p) {
+                extension = fileName.substring(i+1);
+            }
+
+            File f = new File("../mazes/SOLUTION-BFS-" + new File(fileName).getName());
             ImageIO.write(imgSolved, extension, f);
         } catch(IOException e){
             System.out.println("Could not save solution image");

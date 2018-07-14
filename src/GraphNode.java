@@ -5,9 +5,7 @@
  *
  * */
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class GraphNode implements Comparable<GraphNode> {
     // north, south, west, east
@@ -85,6 +83,20 @@ public class GraphNode implements Comparable<GraphNode> {
 
         return neighbors;
     }
+
+    public static LinkedList<GraphNode> reconstructPath(LinkedHashMap<GraphNode, GraphNode> cameFrom, GraphNode end, GraphNode start) {
+        LinkedList<GraphNode> path = new LinkedList<>();
+
+        GraphNode curr = end;
+        path.add(curr);
+        while (curr != start) {
+            curr = cameFrom.get(curr);
+            path.add(curr);
+        }
+
+        return path;
+    }
+
 
     @Override
     public boolean equals (Object obj) {
