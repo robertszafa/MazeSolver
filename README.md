@@ -1,10 +1,12 @@
 # MazeSolver
 ![solution image](mazes/SOLUTION-maze7.gif)
+![statistics image](assets/maze7-statistics-screenshot.png)
+
 
 ## About
 A maze solver written in Java.
 <br>
-This project is in early stages. I have only implemented the A* algorithm for now. More search algorithms will follow. I will also try to implement some sort of time and space complexity measure and to compare various search algorithms.
+This project is in early stages. I have only implemented the A* algorithm for now. More search algorithms will follow.
 
 ## How to run
 ### Compile
@@ -13,7 +15,7 @@ This project is in early stages. I have only implemented the A* algorithm for no
 ### Run
 - from the src directory type <b>java MazeSolver ../mazes/<i>"maze-file-name"</i></b>
 
-## All about mazes
+## What mazes can it solve?
 I have included a couple of maze examples in the mazes folder, however, feel free to add your own mazes.<br>
 <b>Use <a href="http://hereandabove.com/maze/mazeorig.form.html">this website</a> to generate your own mazes and use these parameters:</b><br>
 - path width: 1
