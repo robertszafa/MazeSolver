@@ -4,9 +4,7 @@
 
 
 ## About
-A maze solver written in Java.
-<br>
-This project is in early stages. I have only implemented the A* algorithm for now. More search algorithms will follow.
+A maze solver written in Java. The goal of this project was to implement various search algorithms. For now, this are A*, Breadth First Search and Depth First Search. I will try to implement more algorithms in the future.<br>
 
 ## How to run
 ### Compile
@@ -14,6 +12,12 @@ This project is in early stages. I have only implemented the A* algorithm for no
 - compile the src folder
 ### Run
 - from the src directory type <b>java MazeSolver ../mazes/<i>"maze-file-name"</i></b>
+- if you want to run only individual algorithms, add a second parameter:<br>
+  d - Depth First Search<br>
+  b - Breadth First Search<br>
+  a - A* Search<br>
+  For example:<br>
+  <b>java MazeSolver ../mazes/<i>"maze-file-name"</i> bd</b> - runs only the BFS and DFS search
 
 ## What mazes can it solve?
 I have included a couple of maze examples in the mazes folder, however, feel free to add your own mazes.<br>
