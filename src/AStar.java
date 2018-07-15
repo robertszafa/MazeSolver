@@ -1,3 +1,9 @@
+/** AStar, implements the A* search algorithms to find a path in a maze
+ *
+ * @author Robert Szafarczyk, July, 2018
+ *
+ * */
+
 import java.util.*;
 
 public class AStar {

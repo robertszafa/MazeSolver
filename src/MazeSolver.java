@@ -15,6 +15,7 @@ import java.awt.Color;
 
 public class MazeSolver {
     private static String fileName;
+    private static String options;
     private static BufferedImage img;
     private static ProcessImage processImg;
     private static MazeToGraph mazeGraph;
@@ -27,11 +28,19 @@ public class MazeSolver {
     private static LinkedList<GraphNode> aStarPath;
     private static BFS bfs;
     private static LinkedList<GraphNode> bfsPath;
+    private static DFS dfs;
+    private static LinkedList<GraphNode> dfsPath;
     private static long startTime;
 
 
     public static void main(String[] args) {
         startTime = System.nanoTime();
+
+        if (args.length == 0) {
+            System.out.println("Usage:\n\tjava MazeSolver 'filename' 'options'\noptions:" +
+                    "\nno options provided - run all algorithms\nd - run depth first search\n" +
+                    "b - run breadth first search\na - run A* search\n(options can be combined)");
+        }
 
         // READ FILE
         System.out.println("\nLoading image..");
@@ -44,6 +53,12 @@ public class MazeSolver {
             System.out.println("Could not read file");
             System.exit(1);
         }
+
+        if (args.length > 1) {
+            options = args[1];
+            options = options.toLowerCase();
+        }
+
 
         System.out.println("Converting image to graph..");
         // Process image, convert maze to boolean, convert to nodes
@@ -59,8 +74,27 @@ public class MazeSolver {
         System.out.println("Total node count: " + nodeCount);
         System.out.println("Time elapsed: " + 1.0 * (System.nanoTime() - startTime) / 1000000000 + " s") ;
 
-        processAStar();
-        processBFS();
+        if (options != null) {
+            if (options.contains("a")) {
+                processAStar();
+            }
+            if (options.contains("b")) {
+                processBFS();
+            }
+            if (options.contains("d")) {
+                processDFS();
+            }
+
+            if (!options.contains("a") && !options.contains("b") && !options.contains("d")) {
+                System.out.println("\nWrong options parameter!\nExiting..");
+                System.exit(0);
+            }
+        }
+        else {
+            processAStar();
+            processBFS();
+            processDFS();
+        }
     }
 
 
@@ -123,6 +157,37 @@ public class MazeSolver {
             System.out.println("Could not save solution image");
         }
     }
+
+    private static void processDFS () {
+        System.out.println("\nSolving with DFS..");
+        dfs = new DFS(startNode, endNode, nodes);
+        dfsPath = dfs.getPath();
+        System.out.println("Path found");
+        System.out.println("Nodes visited: " + dfs.nodesVisitedCount);
+        System.out.println("Nodes in solution path: " + dfsPath.size());
+        System.out.println("Time elapsed: " + 1.0 * (System.nanoTime() - startTime) / 1000000000 + " s");
+
+
+        System.out.println("Saving DFS solution image to current directory..");
+        // Save image with solution
+        BufferedImage imgSolved = drawPath(dfsPath, img);
+        try{
+            String extension = "";
+
+            int i = fileName.lastIndexOf('.');
+            int p = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+
+            if (i > p) {
+                extension = fileName.substring(i+1);
+            }
+
+            File f = new File("../mazes/SOLUTION-DFS-" + new File(fileName).getName());
+            ImageIO.write(imgSolved, extension, f);
+        } catch(IOException e){
+            System.out.println("Could not save solution image");
+        }
+    }
+
 
     // draws a green line that represents the solution path
     private static BufferedImage drawPath (LinkedList<GraphNode> path, BufferedImage img) {
