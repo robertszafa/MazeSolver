@@ -4,7 +4,8 @@
 
 
 ## About
-A maze solver written in Java. The goal of this project was to implement various search algorithms. For now, this are A*, Breadth First Search and Depth First Search. I will try to implement more algorithms in the future.<br>
+A maze solver written in Java. The goal of this project was to implement various search algorithms. For now they include: A*, Breadth First Search and Depth First Search.<br>
+I will try to implement more algorithms in the future.<br>
 
 ## How to run
 ### Compile
