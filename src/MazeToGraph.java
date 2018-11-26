@@ -53,7 +53,6 @@ public class MazeToGraph {
             else if (directions.size() == 0) {
                 // retrieve node from lastJunctions stack
                 lastNode = (GraphNode) lastJunctions.peek().keySet().toArray()[0];
-                char lastLastDirection = lastDirection;
                 lastDirection = lastJunctions.peek().get(lastNode).pop();
                 lastNode = findNextNode(lastNode.coordinates, lastDirection, lastNode);
 
